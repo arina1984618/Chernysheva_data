@@ -1,2 +1,2 @@
-gdown
-pandas
+gdown==6.4.1
+pandas==3.0.6
