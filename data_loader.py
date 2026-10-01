@@ -5,7 +5,7 @@ import pandas as pd
 
 def load_data():
     """Скачивает датасет с Google Drive и выводит первые 10 строк."""
-    url = "https://drive.google.com/uc?id=1ohdg9wPXyRJ9rOEz6TwYtRnfX4qfkrhz"
+    url = "https://drive.google.com/uc?id=1iOyw7Rz_kGZGv8rAWYI_BTcNWe-8wEDT" 
     output = "heart_disease.csv"
     
     if not os.path.exists(output):

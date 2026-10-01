@@ -1,5 +1,5 @@
 ## Датасет
-Ссылка на датасет: [Heart Disease Dataset (Extended)](https://drive.google.com/file/d/1ohdg9wPXyRJ9rOEz6TwYtRnfX4qfkrhz/view?usp=drive_link) (файл: heart_disease.csv, размер: 97 КБ, источник: Kaggle)
+Ссылка на датасет: [Heart Disease Dataset (Extended)](https://drive.google.com/file/d/1iOyw7Rz_kGZGv8rAWYI_BTcNWe-8wEDT/view?usp=drive_link) (файл: heart_disease.csv, размер: 97 КБ, источник: Kaggle)
 
 ## О проекте
 
