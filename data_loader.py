@@ -3,7 +3,7 @@ import gdown
 import pandas as pd
 import logging
 
-logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+logger = logging.getLogger(__name__)
 
 # Целочисленные категориальные признаки
 INT_COLS = ["sex", "cp", "fbs", "restecg", "exang", "slope", "ca", "thal", "num", "target_binary"]
@@ -44,10 +44,9 @@ def cast_types(df: pd.DataFrame) -> pd.DataFrame:
     new_nans = new_nans[new_nans > 0]
 
     if not new_nans.empty:
-        logging.info("New NaN values introduced by type casting:")
-        logging.info(new_nans)
+        logger.info("New NaN introduced by casting:\n%s", new_nans)
     else:
-        logging.info("No new NaN values introduced by type casting.")
+        logger.info("No new NaN values introduced by type casting.")
 
     return df
 
@@ -55,13 +54,13 @@ def cast_types(df: pd.DataFrame) -> pd.DataFrame:
 def save_parquet(df: pd.DataFrame, path: str = "heart_disease.parquet") -> None:
     """Сохраняет DataFrame в формат .parquet."""
     df.to_parquet(path, index=False)
-    logging.info(f"Saved to {path}")
+    logger.info("Saved to %s", path)
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
     df = load_data()
     df = cast_types(df)
     print(df.head(10))
     print(df.dtypes)
     save_parquet(df)
-
