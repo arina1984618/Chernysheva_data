@@ -2,6 +2,10 @@ import os
 import gdown
 import pandas as pd
 
+# Списки столбцов вынесены на уровень модуля
+INT_COLS = ["sex", "cp", "fbs", "restecg", "exang", "slope", "ca", "thal", "num", "target_binary"]
+FLOAT_COLS = ["age", "trestbps", "chol", "thalach", "oldpeak"]
+
 
 def load_data() -> pd.DataFrame:
     """Скачивает датасет с Google Drive и читает его в DataFrame."""
@@ -18,17 +22,13 @@ def cast_types(df: pd.DataFrame) -> pd.DataFrame:
     """Приводит типы столбцов датасета к правильным."""
     df = df.copy()
 
-    # Целочисленные категориальные признаки
-    int_cols = ["sex", "cp", "fbs", "restecg", "exang", "slope", "ca", "thal", "num", "target_binary"]
-    for col in int_cols:
+    for col in INT_COLS:
         if col in df.columns:
-            df[col] = df[col].astype("Int64")
+            df[col] = pd.to_numeric(df[col], errors="coerce").astype("Int64")
 
-    # Вещественные признаки
-    float_cols = ["age", "trestbps", "chol", "thalach", "oldpeak"]
-    for col in float_cols:
+    for col in FLOAT_COLS:
         if col in df.columns:
-            df[col] = df[col].astype("float64")
+            df[col] = pd.to_numeric(df[col], errors="coerce").astype("float64")
 
     return df
 
