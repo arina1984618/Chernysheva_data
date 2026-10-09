@@ -2,8 +2,10 @@ import os
 import gdown
 import pandas as pd
 
-# Списки столбцов вынесены на уровень модуля
+# Целочисленные категориальные признаки
 INT_COLS = ["sex", "cp", "fbs", "restecg", "exang", "slope", "ca", "thal", "num", "target_binary"]
+
+# Вещественные (непрерывные) признаки
 FLOAT_COLS = ["age", "trestbps", "chol", "thalach", "oldpeak"]
 
 
@@ -29,6 +31,15 @@ def cast_types(df: pd.DataFrame) -> pd.DataFrame:
     for col in FLOAT_COLS:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce").astype("float64")
+
+    # Диагностика: сколько NaN появилось после приведения типов
+    nan_counts = df.isna().sum()
+    nan_counts = nan_counts[nan_counts > 0]
+    if not nan_counts.empty:
+        print("NaN counts after casting:")
+        print(nan_counts)
+    else:
+        print("No NaN values after casting.")
 
     return df
 
