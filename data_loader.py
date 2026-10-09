@@ -1,6 +1,9 @@
 import os
 import gdown
 import pandas as pd
+import logging
+
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
 # Целочисленные категориальные признаки
 INT_COLS = ["sex", "cp", "fbs", "restecg", "exang", "slope", "ca", "thal", "num", "target_binary"]
@@ -24,6 +27,9 @@ def cast_types(df: pd.DataFrame) -> pd.DataFrame:
     """Приводит типы столбцов датасета к правильным."""
     df = df.copy()
 
+    # Считаем NaN до приведения типов
+    nan_before = df.isna().sum()
+
     for col in INT_COLS:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce").astype("Int64")
@@ -32,14 +38,16 @@ def cast_types(df: pd.DataFrame) -> pd.DataFrame:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce").astype("float64")
 
-    # Диагностика: сколько NaN появилось после приведения типов
-    nan_counts = df.isna().sum()
-    nan_counts = nan_counts[nan_counts > 0]
-    if not nan_counts.empty:
-        print("NaN counts after casting:")
-        print(nan_counts)
+    # Считаем NaN после и находим «появившиеся»
+    nan_after = df.isna().sum()
+    new_nans = nan_after - nan_before
+    new_nans = new_nans[new_nans > 0]
+
+    if not new_nans.empty:
+        logging.info("New NaN values introduced by type casting:")
+        logging.info(new_nans)
     else:
-        print("No NaN values after casting.")
+        logging.info("No new NaN values introduced by type casting.")
 
     return df
 
@@ -47,7 +55,7 @@ def cast_types(df: pd.DataFrame) -> pd.DataFrame:
 def save_parquet(df: pd.DataFrame, path: str = "heart_disease.parquet") -> None:
     """Сохраняет DataFrame в формат .parquet."""
     df.to_parquet(path, index=False)
-    print(f"Saved to {path}")
+    logging.info(f"Saved to {path}")
 
 
 if __name__ == '__main__':
@@ -56,3 +64,4 @@ if __name__ == '__main__':
     print(df.head(10))
     print(df.dtypes)
     save_parquet(df)
+
