@@ -35,13 +35,13 @@ def to_dataframe(data: list) -> pd.DataFrame:
     """Преобразует ответ API в pandas DataFrame."""
     df = pd.DataFrame(data)
 
-    # Оставляем нужные столбцы
-    df = df[[
+    # Оставляем нужные столбцы (reindex не упадёт, если чего-то нет)
+    df = df.reindex(columns=[
         "id", "symbol", "name", "current_price", "market_cap",
         "market_cap_rank", "total_volume", "high_24h", "low_24h",
         "price_change_24h", "price_change_percentage_24h",
         "circulating_supply", "ath", "atl",
-    ]]
+    ])
 
     # Приведение типов
     numeric_cols = [
@@ -56,13 +56,14 @@ def to_dataframe(data: list) -> pd.DataFrame:
     return df
 
 
-def save_parquet(df: pd.DataFrame, path: str = "crypto.parquet") -> None:
-    """Сохраняет DataFrame в .parquet."""
+def save_parquet(df: pd.DataFrame, path: str = "data/crypto.parquet") -> None:
+    """Сохраняет DataFrame в .parquet, создавая папку при необходимости."""
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     df.to_parquet(path, index=False)
     logger.info("Saved to %s", path)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
     data = fetch_crypto_data()
