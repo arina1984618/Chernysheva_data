@@ -1,5 +1,5 @@
-import os
 from pathlib import Path
+import time
 import requests
 import pandas as pd
 import logging
@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 API_URL = "https://api.coingecko.com/api/v3/coins/markets"
 
 
-def fetch_crypto_data(vs_currency: str = "usd", per_page: int = 20) -> list:
+def fetch_crypto_data(vs_currency: str = "usd", per_page: int = 20) -> list[dict]:
     """Запрашивает данные о криптовалютах из CoinGecko API.
 
     Args:
@@ -27,9 +27,20 @@ def fetch_crypto_data(vs_currency: str = "usd", per_page: int = 20) -> list:
         "sparkline": False,
         "price_change_percentage": "24h",
     }
-    response = requests.get(API_URL, params=params, timeout=30)
+
+    # Простой retry при 429 (Too Many Requests)
+    for attempt in range(3):
+        response = requests.get(API_URL, params=params, timeout=30)
+        if response.status_code == 429:
+            logger.warning("CoinGecko вернул 429, попытка %d/3, ждём 5 сек", attempt + 1)
+            time.sleep(5)
+            continue
+        response.raise_for_status()
+        return response.json()
+
+    # Если все попытки исчерпаны
     response.raise_for_status()
-    return response.json()
+    return []
 
 
 def to_dataframe(data: list) -> pd.DataFrame:
@@ -74,7 +85,7 @@ if __name__ == "__main__":
     logger.info("Получено %d монет", len(data))
 
     df = to_dataframe(data)
-    print(df.head(20))
-    print(df.dtypes)
+    logger.info("\n%s", df.head(20))
+    logger.info("\n%s", df.dtypes)
 
     save_parquet(df)
