@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import requests
 import pandas as pd
 import logging
@@ -58,7 +59,7 @@ def to_dataframe(data: list) -> pd.DataFrame:
 
 def save_parquet(df: pd.DataFrame, path: str = "data/crypto.parquet") -> None:
     """Сохраняет DataFrame в .parquet, создавая папку при необходимости."""
-    os.makedirs(os.path.dirname(path), exist_ok=True)
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(path, index=False)
     logger.info("Saved to %s", path)
 
@@ -67,8 +68,12 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
     data = fetch_crypto_data()
-    df = to_dataframe(data)
+    if not data:
+        logger.error("CoinGecko вернул пустой список")
+        raise SystemExit(1)
+    logger.info("Получено %d монет", len(data))
 
+    df = to_dataframe(data)
     print(df.head(20))
     print(df.dtypes)
 
