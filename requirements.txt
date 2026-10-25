@@ -2,3 +2,6 @@ gdown==6.4.1
 pandas==3.0.6
 pyarrow==26.0.0
 requests==2.34.2
+matplotlib==3.11.2
+seaborn==0.13.2
+jupyter==1.1.1
