@@ -3,3 +3,5 @@ heart_disease.csv
 *.save
 *.save.*
 *.parquet
+
+data/
